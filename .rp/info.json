@@ -1,0 +1,11 @@
+{
+    "cpu": 4,
+    "docker_shm": "64g",
+    "gpus": 1,
+    "memory": 24,
+    "name": "mrt",
+    "rp_version": "0.0.2",
+    "stdout_to_file": false,
+    "tag": "felix_mueller/rp_mrt",
+    "username": "felix_mueller"
+}
