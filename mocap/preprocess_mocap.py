@@ -124,7 +124,8 @@ for ii in range(4):
         #print(motion_list_A.shape[0])
         for j in range(0,motion_list_A.shape[0],2):
             
-            if j+120>motion_list_A.shape[0]:
+            # TODO: I added this, is this an issue for reproducability?
+            if j+120>motion_list_A.shape[0] or j+120>motion_list_B.shape[0]:
                 break
             A_=np.expand_dims(np.array(motion_list_A[j:j+120]),0)
             B_=np.expand_dims(np.array(motion_list_B[j:j+120]),0)
@@ -135,10 +136,10 @@ for ii in range(4):
     for i in range(scene_length):
         motion_list_A=np.array(motion_list_A_test[i])
         motion_list_B=np.array(motion_list_B_test[i])
-        #print(motion_list_A.shape[0])
+        #print(motion_list_A.shape[0])k
         for j in range(0,motion_list_A.shape[0],2): #down sample
             
-            if j+120>motion_list_A.shape[0]:
+            if j+120>motion_list_A.shape[0] or j+120>motion_list_B.shape[0]:
                 break
             A_=np.expand_dims(np.array(motion_list_A[j:j+120]),0) # 120: 30 fps, 4 seconds
             B_=np.expand_dims(np.array(motion_list_B[j:j+120]),0)
