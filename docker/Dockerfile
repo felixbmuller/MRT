@@ -15,6 +15,11 @@ RUN conda install -y pip numpy
 RUN conda install -y pytorch==1.1.0 torchvision==0.3.0 cudatoolkit==9.0 -c pytorch
 RUN pip install torch-dct
 RUN pip install transforms3d matplotlib pygame pyopengl
+# install fmpeg does not work without update
 RUN apt-get update
 RUN apt-get install -y ffmpeg
 RUN conda install numba
+
+# dataset is included via path.json, link it to the location the scripts expect it
+# did this manually, how to do it in Dockerfile?
+#RUN ln -s /home/user/all_asfamc /home/user/mrt/mocap/
