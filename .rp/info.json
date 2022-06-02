@@ -1,5 +1,5 @@
 {
-    "cpu": 4,
+    "cpu": 8,
     "docker_shm": "64g",
     "gpus": 1,
     "memory": 24,
