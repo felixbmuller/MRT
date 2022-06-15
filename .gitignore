@@ -1,7 +1,6 @@
 output/
 .cache/
 .replik_paths.json
-mocap/all_asfamc/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -53,3 +52,10 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# models and data
+mocap/*.npy
+mocap/all_asfamc
+mupots3d/data
+mupots3d/*.npy
+saved_model/
