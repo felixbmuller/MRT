@@ -1,5 +1,6 @@
 [
     "output",
     ".cache",
-    "/home/muller/datasets/cmu_mocap/all_asfamc"
+    "/home/muller/datasets/cmu_mocap/all_asfamc",
+    "/home/muller/cvg-muller/mupots-3d-eval/MultiPersonTestSet"
 ]
