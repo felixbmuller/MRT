@@ -208,9 +208,9 @@ class Transformer(nn.Module):
 
     def forward(self, src_seq, trg_seq, input_seq, use=None):
         '''
-        src_seq: local
-        trg_seq: local
-        input_seq: global
+        src_seq: local -> input to local encoder
+        trg_seq: local -> input to decoder
+        input_seq: global -> input to global encoder
         '''
         n_person=input_seq.shape[1]
 

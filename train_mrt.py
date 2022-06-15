@@ -59,6 +59,7 @@ for epoch in range(100):
         
         # first 1 second predict future 1 second
         input_=input_seq.view(-1,15,input_seq.shape[-1]) # batch x n_person ,15: 15 fps, 1 second, 45: 15joints x 3
+        # input_ is local information, input_seq global
         
         output_=output_seq.view(output_seq.shape[0]*output_seq.shape[1],-1,input_seq.shape[-1])
 
@@ -88,6 +89,7 @@ for epoch in range(100):
         
         results=output_[:,:1,:]
         for i in range(1,31+15):
+            # model output is delta -> apply delta to original pose? (?)
             results=torch.cat([results,output_[:,:1,:]+torch.sum(rec[:,:i,:],dim=1,keepdim=True)],dim=1)
         results=results[:,1:,:]
       
