@@ -3,6 +3,7 @@ import numpy as np
 import torch_dct as dct
 import time
 from MRT.Models import Transformer
+from types import SimpleNamespace
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -12,9 +13,24 @@ import numpy as np
 import os
 
 from data import TESTDATA
+from utils import timestamp
+
+## PARAMETERS
+
+# params that should be logged
+params = SimpleNamespace(
+    dataset = "mupots",
+    MPJPE = True,
+)
+
+# params that do not need to be logged
+plot=False
+gt=False
+
+## END PARAMETERS
 
 
-test_dataset = TESTDATA(dataset='mupots')
+test_dataset = TESTDATA(dataset=params.dataset)
 test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 device='cpu'
@@ -26,12 +42,6 @@ model = Transformer(d_word_vec=128, d_model=128, d_inner=1024,
             n_layers=3, n_head=8, d_k=64, d_v=64,device=device).to(device)
 
 
-
-
-plot=True
-gt=False
-
-
 model.load_state_dict(torch.load('./saved_model/39.model',map_location=device)) 
 
 
@@ -40,6 +50,7 @@ body_edges = np.array(
 [4,5],[5,6],[0,7],[7,8],[7,9],[9,10],[10,11],[7,12],[12,13],[13,14]]
 )
 
+all_results = []
 
 losses=[]
 
@@ -62,9 +73,10 @@ with torch.no_grad():
         use=[input_seq.shape[1]]
         
         input_=input_seq.view(-1,15,input_seq.shape[-1])
-  
-    
+        # same shape as before (3, 15, 45)
+
         output_=output_seq.view(output_seq.shape[0]*output_seq.shape[1],-1,input_seq.shape[-1])
+        # shape: (138, 1, 45)
 
         input_ = dct.dct(input_)
         output__ = dct.dct(output_[:,:,:])
@@ -77,6 +89,7 @@ with torch.no_grad():
         results=output_[:,:1,:]
         for i in range(1,16):
             results=torch.cat([results,output_[:,:1,:]+torch.sum(rec[:,:i,:],dim=1,keepdim=True)],dim=1)
+            # why is output fused into result here? Isn't output the GT
         results=results[:,1:,:]
 
         new_input_seq=torch.cat([input_seq,results.reshape(input_seq.shape)],dim=-2)
@@ -116,6 +129,8 @@ with torch.no_grad():
         for i in range(1,31+15):
             results=torch.cat([results,output_[:,:1,:]+torch.sum(rec[:,:i,:],dim=1,keepdim=True)],dim=1)
         results=results[:,1:,:]
+
+        all_results.append(results)
         
         prediction_1=results[:,:15,:].view(results.shape[0],-1,n_joints,3)
         prediction_2=results[:,:30,:].view(results.shape[0],-1,n_joints,3)
@@ -125,7 +140,7 @@ with torch.no_grad():
         gt_2=output_seq[0][:,1:31,:].view(results.shape[0],-1,n_joints,3)
         gt_3=output_seq[0][:,1:46,:].view(results.shape[0],-1,n_joints,3)
         
-        if MPJPE:
+        if params.MPJPE:
         #MPJPE
             loss1=torch.sqrt(((prediction_1 - gt_1) ** 2).sum(dim=-1)).mean(dim=-1).mean(dim=-1).numpy().tolist()
             loss2=torch.sqrt(((prediction_2 - gt_2) ** 2).sum(dim=-1)).mean(dim=-1).mean(dim=-1).numpy().tolist()
@@ -182,7 +197,8 @@ with torch.no_grad():
             
             while i < length_:
                 
-                ax.lines = []
+                #ax.lines = []
+                #ax.clear()
 
                 for x_i in range(p_x.shape[0]):
                     temp_x=[p_x[x_i],p_x[x_i]]
@@ -259,7 +275,7 @@ with torch.no_grad():
 
             
             plt.ioff()
-            plt.show()
+            plt.savefig(f"test_plots/plot_MPJPE_True_{jjj}.png")
             plt.close()
 
             
@@ -268,4 +284,6 @@ with torch.no_grad():
     print('avg 2 seconds',np.mean(loss_list2))
     print('avg 3 seconds',np.mean(loss_list3))
     
-    
+    print("saving all results")
+    np.save(f"test_all_results_{timestamp()}_{params.dataset}_{params.MPJPE}.npy", torch.stack(all_results).detach().numpy())
+    print("done")
