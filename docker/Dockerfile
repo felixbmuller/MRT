@@ -15,11 +15,15 @@ RUN conda install -y pip numpy
 RUN conda install -y pytorch==1.1.0 torchvision==0.3.0 cudatoolkit==9.0 -c pytorch
 RUN pip install torch-dct
 RUN pip install transforms3d matplotlib pygame pyopengl
+RUN pip install open3d==0.15.2
+RUN pip install trimesh
 # install fmpeg does not work without update
 RUN apt-get update
 RUN apt-get install -y ffmpeg
 RUN conda install numba
+RUN conda install -c conda-forge jupyterlab
 
 # dataset is included via path.json, link it to the location the scripts expect it
 # did this manually, how to do it in Dockerfile?
 #RUN ln -s /home/user/all_asfamc /home/user/mrt/mocap/
+#RUN ln -s /home/user/MultiPersonTestSet /home/user/mrt/mupots3d/data
