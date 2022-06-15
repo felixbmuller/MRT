@@ -4,6 +4,7 @@ import torch_dct as dct
 import time
 from MRT.Models import Transformer
 from types import SimpleNamespace
+from random import Random
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -14,27 +15,30 @@ import os
 
 from data import TESTDATA
 from utils import timestamp
+from visualization import plot_scene_gif
 
 ## PARAMETERS
 
 # params that should be logged
 params = SimpleNamespace(
-    dataset = "mupots",
+    dataset = "mocap",
     MPJPE = True,
 )
 
 # params that do not need to be logged
-plot=False
-gt=False
-
+plot=True
+save_all_results=False
 ## END PARAMETERS
 
 
 test_dataset = TESTDATA(dataset=params.dataset)
 test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-device='cpu'
 
+#indices = range(len(test_dataset)) # use this to iterate over all samples
+# look at 20 random images
+#indices = Random(42).sample(range(len(test_dataset)), 20)
+device='cpu'
 batch_size=1
 
 
@@ -61,10 +65,10 @@ loss_list3=[]
 with torch.no_grad():
     model.eval()
     loss_list=[]
-    for jjj,data in enumerate(test_dataloader,0):
+    for jjj, data in enumerate(test_dataset, 0):
         print(jjj)
-        #if jjj!=20:
-        #    continue
+        if jjj>20:
+            break
         input_seq,output_seq=data
         
         input_seq=torch.tensor(input_seq,dtype=torch.float32).to(device)
@@ -166,117 +170,9 @@ with torch.no_grad():
         losses.append(loss)
         #print(loss)
 
-        rec=results[:,:,:]
-        
-        rec=rec.reshape(results.shape[0],-1,n_joints,3)
-        
-        input_seq=input_seq.view(results.shape[0],15,n_joints,3)
-        pred=torch.cat([input_seq,rec],dim=1)
-        output_seq=output_seq.view(results.shape[0],-1,n_joints,3)[:,1:,:,:]
-        all_seq=torch.cat([input_seq,output_seq],dim=1)
-        
-
-        pred=pred[:,:,:,:].cpu()
-        all_seq=all_seq[:,:,:,:].cpu()
         
         if plot:
-            fig = plt.figure(figsize=(10, 4.5))
-            fig.tight_layout()
-            ax = fig.add_subplot(111, projection='3d')
-            
-            plt.ion()
-            
-            length=45+15
-            length_=45+15
-            i=0
-
-            p_x=np.linspace(-10,10,15)
-            p_y=np.linspace(-10,10,15)
-            X,Y=np.meshgrid(p_x,p_y)
-            
-            
-            while i < length_:
-                
-                #ax.lines = []
-                #ax.clear()
-
-                for x_i in range(p_x.shape[0]):
-                    temp_x=[p_x[x_i],p_x[x_i]]
-                    temp_y=[p_y[0],p_y[-1]]
-                    z=[0,0]
-                    ax.plot(temp_x,temp_y,z,color='black',alpha=0.1)
-
-                for y_i in range(p_x.shape[0]):
-                    temp_x=[p_x[0],p_x[-1]]
-                    temp_y=[p_y[y_i],p_y[y_i]]
-                    z=[0,0]
-                    ax.plot(temp_x,temp_y,z,color='black',alpha=0.1)
-
-                for j in range(results.shape[0]):
-                    
-                    xs=pred[j,i,:,0].numpy()
-                    ys=pred[j,i,:,1].numpy()
-                    zs=pred[j,i,:,2].numpy()
-                    
-                    alpha=1
-                    ax.plot( zs,xs, ys, 'y.',alpha=alpha)
-                    
-                    if gt:
-                        x=all_seq[j,i,:,0].numpy()
-                        
-                        y=all_seq[j,i,:,1].numpy()
-                        z=all_seq[j,i,:,2].numpy()
-                    
-                    
-                        ax.plot( z,x, y, 'y.')
-
-
-                    plot_edge=True
-                    if plot_edge:
-                        for edge in body_edges:
-                            x=[pred[j,i,edge[0],0],pred[j,i,edge[1],0]]
-                            y=[pred[j,i,edge[0],1],pred[j,i,edge[1],1]]
-                            z=[pred[j,i,edge[0],2],pred[j,i,edge[1],2]]
-                            if i>=15:
-                                ax.plot(z,x, y, zdir='z',c='blue',alpha=alpha)
-                                
-                            else:
-                                ax.plot(z,x, y, zdir='z',c='green',alpha=alpha)
-                            
-                            if gt:
-                                x=[all_seq[j,i,edge[0],0],all_seq[j,i,edge[1],0]]
-                                y=[all_seq[j,i,edge[0],1],all_seq[j,i,edge[1],1]]
-                                z=[all_seq[j,i,edge[0],2],all_seq[j,i,edge[1],2]]
-                            
-                                if i>=15:
-                                    ax.plot( z,x, y, 'yellow',alpha=0.8)
-                                else:
-                                    ax.plot( z, x, y, 'green')
-                            
-                   
-                    ax.set_xlim3d([-3 , 3])
-                    ax.set_ylim3d([-3 , 3])
-                    ax.set_zlim3d([0,3])
-                    # ax.set_xlim3d([-8 , 8])
-                    # ax.set_ylim3d([-8 , 8])
-                    # ax.set_zlim3d([0,5])
-                    # ax.set_xticklabels([])
-                    # ax.set_yticklabels([])
-                    # ax.set_zticklabels([])
-                    ax.set_axis_off()
-                    #ax.patch.set_alpha(1)
-                    #ax.set_aspect('equal')
-                    #ax.set_xlabel("x")
-                    #ax.set_ylabel("y")
-                    #ax.set_zlabel("z")
-                    plt.title(str(i),y=-0.1)
-                plt.pause(0.1)
-                i += 1
-
-            
-            plt.ioff()
-            plt.savefig(f"test_plots/plot_MPJPE_True_{jjj}.png")
-            plt.close()
+            plot_scene_gif(f"{params.dataset}{jjj}_{timestamp()}.gif", results, input_seq, output_seq, title=f"{params.dataset}{jjj}")
 
             
 
@@ -284,6 +180,7 @@ with torch.no_grad():
     print('avg 2 seconds',np.mean(loss_list2))
     print('avg 3 seconds',np.mean(loss_list3))
     
-    print("saving all results")
-    np.save(f"test_all_results_{timestamp()}_{params.dataset}_{params.MPJPE}.npy", torch.stack(all_results).detach().numpy())
-    print("done")
+    if save_all_results:
+        print("saving all results")
+        np.save(f"test_all_results_{timestamp()}_{params.dataset}_{params.MPJPE}.npy", torch.stack(all_results).detach().numpy())
+        print("done")
