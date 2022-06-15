@@ -1,8 +1,8 @@
 {
-    "cpu": 8,
+    "cpu": 1,
     "docker_shm": "64g",
-    "gpus": 1,
-    "memory": 24,
+    "gpus": 0,
+    "memory": 4,
     "name": "mrt",
     "rp_version": "0.0.2",
     "stdout_to_file": false,
