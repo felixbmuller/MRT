@@ -2,6 +2,10 @@
 # Data
 
 - 15 joints
+- 6,000 training mocap
+- 800 test mocap
+- 209 test mupots
+
 datapoints
 - input shape: (3, 15, 45)
 - output shape: (3, 46, 45)
