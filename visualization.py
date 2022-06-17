@@ -4,11 +4,7 @@ import torch
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-N_JOINTS = 15
-body_edges = np.array(
-[[0,1], [1,2],[2,3],[0,4],
-[4,5],[5,6],[0,7],[7,8],[7,9],[9,10],[10,11],[7,12],[12,13],[13,14]]
-)
+from utils import N_JOINTS, BODY_EDGES
 
 def plot_scene_gif(save_path : str, 
             results, 
@@ -108,7 +104,7 @@ def plot_scene_gif(save_path : str,
 
             plot_edge=True
             if plot_edge:
-                for edge in body_edges:
+                for edge in BODY_EDGES:
 
                     if plot_predicted:
                         x=[pred[j,i,edge[0],0],pred[j,i,edge[1],0]]
