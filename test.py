@@ -21,7 +21,7 @@ from visualization import plot_scene_gif
 
 # params that should be logged
 params = SimpleNamespace(
-    dataset = "mocap",
+    dataset = "mupots",
     MPJPE = True,
 )
 
@@ -37,7 +37,7 @@ test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffl
 
 #indices = range(len(test_dataset)) # use this to iterate over all samples
 # look at 20 random images
-#indices = Random(42).sample(range(len(test_dataset)), 20)
+indices = set(Random(42).sample(range(len(test_dataset)), 20))
 device='cpu'
 batch_size=1
 
@@ -65,10 +65,12 @@ loss_list3=[]
 with torch.no_grad():
     model.eval()
     loss_list=[]
-    for jjj, data in enumerate(test_dataset, 0):
+    for jjj, data in enumerate(test_dataloader, 0):
+       
+        if jjj not in indices:
+            continue
+
         print(jjj)
-        if jjj>20:
-            break
         input_seq,output_seq=data
         
         input_seq=torch.tensor(input_seq,dtype=torch.float32).to(device)
@@ -172,7 +174,7 @@ with torch.no_grad():
 
         
         if plot:
-            plot_scene_gif(f"{params.dataset}{jjj}_{timestamp()}.gif", results, input_seq, output_seq, title=f"{params.dataset}{jjj}")
+            plot_scene_gif(f"output/{params.dataset}{jjj}_{timestamp()}.gif", results, input_seq, output_seq, title=f"{params.dataset}{jjj}")
 
             
 
