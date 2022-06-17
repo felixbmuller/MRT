@@ -3,7 +3,7 @@ import numpy as np
 import torch_dct as dct
 
 from MRT.Models import Transformer
-from utils import N_JOINTS
+from utils import N_JOINTS, to_t
 
 def init_model(model_path: str='./saved_model/39.model', device="cpu", train_mode=False):
     """Load model from checkpoint.
@@ -115,7 +115,9 @@ def infer(model, input_seq, output_seq, device="cpu"):
         results=torch.cat([results,output_[:,:1,:]+torch.sum(rec[:,:i,:],dim=1,keepdim=True)],dim=1)
     results=results[:,1:,:]
 
-    return results, output_seq
+    assert output_seq.shape[0] == 1, "batch too large"
+
+    return results, output_seq[0]
 
 def split_extend_sequence(seq):
     """split an output sequence (ground truth or predicted) into one second parts and separate coordinates for all joints.
@@ -154,6 +156,8 @@ def calc_loss(results, output_seq, MPJPE=True, mean=True):
     -------
     loss1, loss2, loss3
     """
+
+    #print(f"results: {results.shape}, output_seq: {output_seq.shape}")
 
     prediction_1, prediction_2, prediction_3 = split_extend_sequence(results)
     gt_1, gt_2, gt_3 = split_extend_sequence(output_seq)
