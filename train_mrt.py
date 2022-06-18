@@ -14,7 +14,7 @@ from torch.nn import init
 
 from data import DATA
 dataset = DATA()
-batch_size=64
+batch_size=32
 
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
@@ -26,7 +26,7 @@ real_motion_all=list(enumerate(real_motion_dataloader))
 
 device='cuda'
 
-
+# MEM: ~4GB, CPU:>5 (5->GPU util: 60%)
 
 model = Transformer(d_word_vec=128, d_model=128, d_inner=1024,
             n_layers=3, n_head=8, d_k=64, d_v=64,device=device).to(device)
@@ -47,7 +47,7 @@ params_d = [
 optimizer_d = optim.Adam(params_d)
 
 
-for epoch in range(100):
+for epoch in range(50):
     total_loss=0
     
     for j,data in enumerate(dataloader,0):
@@ -125,9 +125,9 @@ for epoch in range(100):
         total_loss=total_loss+loss
 
     print('epoch:',epoch,'loss:',total_loss/(j+1))
-    if (epoch+1)%5==0:
-        save_path=f'./saved_model/{epoch}.model'
-        torch.save(model.state_dict(),save_path)
+    #if (epoch+1)%5==0:
+    save_path=f'./saved_model_batch32/{epoch}.model'
+    torch.save(model.state_dict(),save_path)
 
 
         
