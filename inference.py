@@ -179,5 +179,5 @@ def calc_loss(results, output_seq, MPJPE=True, mean=True):
         loss2 = np.mean(loss2)
         loss3 = np.mean(loss3)
 
-    return loss1, loss2, loss2
+    return loss1, loss2, loss3
 
