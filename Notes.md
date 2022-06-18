@@ -21,3 +21,6 @@ datapoints
 - pip install torch-dct transforms3d matplotlib pygame pyopengl open3d==0.15.2 trimesh
 - conda install numba
 - conda install -c conda-forge jupyterlab
+
+TODO:
+- reread datasets & results section, find out which is done with which data
