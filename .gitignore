@@ -58,4 +58,4 @@ mocap/*.npy
 mocap/all_asfamc
 mupots3d/data
 mupots3d/*.npy
-saved_model/
+saved_model*
