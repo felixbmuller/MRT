@@ -60,3 +60,4 @@ Fragen
   anwesenden Ist einfach zusammenschieben eine gute Lösung? Weil 18 unique personen?
 - Auf histogramm schauen, ist das realistisch?
 - Ist es okay personen komplett zu maskieren, die innerhalb der 3sec kommen/gehen?
+- Auswahl an joints okay?
