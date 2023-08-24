@@ -5,7 +5,7 @@ import numpy as np
 class D_DATA(data.Dataset):
     def __init__(self,joints=15):
         
-        self.data=np.load('./mocap/discriminator_3_120_mocap.npy',allow_pickle=True)
+        self.data=np.load('./data/discriminator_3_120_mocap.npy',allow_pickle=True)
         
         self.len=len(self.data)
         

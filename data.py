@@ -5,7 +5,10 @@ import numpy as np
 class DATA(data.Dataset):
     def __init__(self):
         
-        self.data=np.load('./mocap/train_3_120_mocap.npy',allow_pickle=True)
+        mocap = np.load('./data/train_3_120_mocap.npy',allow_pickle=True)
+        bamp = np.load("./data/bamp_train.npy", allow_pickle=True)
+
+        self.data = np.concatenate([mocap, bamp], axis=0)
         
         self.len=len(self.data)
         
