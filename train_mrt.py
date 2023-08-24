@@ -120,7 +120,7 @@ for epoch in range(100):
         loss.backward()
         optimizer.step()
  
-        total_loss=total_loss+loss
+        total_loss=total_loss+float(loss)
 
     print('epoch:',epoch,'loss:',total_loss/(j+1))
     if (epoch+1)%5==0:
