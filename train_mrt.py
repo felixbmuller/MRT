@@ -10,6 +10,7 @@ from torch.autograd import Variable
 import torch.nn as nn
 from torch.nn import init
 
+from tqdm import tqdm
 
 
 from data import DATA
@@ -47,7 +48,7 @@ params_d = [
 optimizer_d = optim.Adam(params_d)
 
 
-for epoch in range(100):
+for epoch in tqdm(range(100)):
     total_loss=0
     
     for j,data in enumerate(dataloader,0):

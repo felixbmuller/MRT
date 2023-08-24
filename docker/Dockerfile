@@ -25,6 +25,7 @@ RUN pip install trimesh
 # install fmpeg does not work without update
 RUN apt-get update
 RUN apt-get install -y ffmpeg
+RUN pip install tqdm
 #RUN pip install mlflow einops seaborn jupyterlab fire numba tensorboard
 #RUN pip install git+https://github.com/jutanke/ndms.git
 
