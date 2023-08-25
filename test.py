@@ -3,6 +3,7 @@ import numpy as np
 import torch_dct as dct
 import time
 from MRT.Models import Transformer
+import sys
 
 
 
@@ -15,7 +16,7 @@ import os
 
 from data import TESTDATA
 
-dataset_name='mupots'
+dataset_name=sys.argv[1]
 
 test_dataset = TESTDATA(dataset=dataset_name)
 test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
